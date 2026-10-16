@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int tempCount = 0;
+
+// Function to generate a new temporary variable
+char* newTemp() {
+    char* temp = (char*)malloc(sizeof(char) * 3);
+    sprintf(temp, "t%d", tempCount++);
+    return temp;
+}
+
+// Function to generate three-address code for addition operation
+void generateAdd(char* op1, char* op2, char* result) {
+    printf("%s = %s + %s\n", result, op1, op2);
+}
+
+// Function to generate three-address code for subtraction operation
+void generateSub(char* op1, char* op2, char* result) {
+    printf("%s = %s - %s\n", result, op1, op2);
+}
+
+// Function to generate three-address code for multiplication operation
+void generateMul(char* op1, char* op2, char* result) {
+    printf("%s = %s * %s\n", result, op1, op2);
+}
+
+// Function to generate three-address code for division operation
+void generateDiv(char* op1, char* op2, char* result) {
+    printf("%s = %s / %s\n", result, op1, op2);
+}
+
+int main() {
+    char op1[10], op2[10], result[10], op[2];
+
+    printf("Enter an expression (operand1 operator operand2): ");
+    scanf("%s %s %s", op1, op, op2);
+
+    strcpy(result, newTemp());
+
+    switch (op[0]) {
+        case '+':
+            generateAdd(op1, op2, result);
+            break;
+        case '-':
+            generateSub(op1, op2, result);
+            break;
+        case '*':
+            generateMul(op1, op2, result);
+            break;
+        case '/':
+            generateDiv(op1, op2, result);
+            break;
+        default:
+            printf("Invalid operator\n");
+            return 1;
+    }
+
+    return 0;
+}
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+void main(){
+    char a[30];
+    FILE *f2;
+    f2=fopen("fout.txt","w");
+    printf("enter the expression");
+    scanf("%s",a);
+    int j=1,i=0;
+    while(a[i]!='\0'){
+        if(i==0){
+            fprintf(f2,"t%d=%c%c%c\n",j,a[i],a[i+1],a[i+2]);
+            i+=3;
+            j++;
+        }
+        else{
+            fprintf(f2,"t%d=t%d%c%c\n",j,j-1,a[i],a[i+1]);
+            i+=2;
+            j++;
+        }
+    }
+    fprintf(f2,"out=t%d",j-1);
+    
+}

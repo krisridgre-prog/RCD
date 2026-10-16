@@ -1,0 +1,257 @@
+CALCULATOR USING LEX AND YACC
+
+
+FILE 1: calc.l
+===============
+
+%{
+#include "y.tab.h"
+#include <stdio.h>
+#include <stdlib.h>
+%}
+
+%%
+
+[0-9]+ {
+    yylval = atoi(yytext);
+    return NUMBER;
+}
+
+[+\-*/()] {
+    return yytext[0];
+}
+
+\n {
+    return '\n';
+}
+
+[ \t]+ {
+    /* Ignore spaces and tabs */
+}
+
+. {
+    printf("Invalid character: %s\n", yytext);
+}
+
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+
+FILE 2: calc.y
+===============
+
+%{
+#include <stdio.h>
+#include <stdlib.h>
+
+int yylex(void);
+int yyerror(char *s);
+%}
+
+%token NUMBER
+
+%left '+' '-'
+%left '*' '/'
+%right UMINUS
+
+%%
+
+input:
+      /* empty */
+    | input line
+    ;
+
+line:
+      '\n'
+    | expr '\n' {
+          printf("Result = %d\n", $1);
+      }
+    ;
+
+expr:
+      NUMBER {
+          $$ = $1;
+      }
+    | expr '+' expr {
+          $$ = $1 + $3;
+      }
+    | expr '-' expr {
+          $$ = $1 - $3;
+      }
+    | expr '*' expr {
+          $$ = $1 * $3;
+      }
+    | expr '/' expr {
+          if ($3 == 0) {
+              printf("Error: Division by zero\n");
+              $$ = 0;
+          }
+          else {
+              $$ = $1 / $3;
+          }
+      }
+    | '(' expr ')' {
+          $$ = $2;
+      }
+    | '-' expr %prec UMINUS {
+          $$ = -$2;
+      }
+    ;
+
+%%
+
+int main()
+{
+    printf("Enter an expression (Ctrl+D to exit):\n");
+    yyparse();
+    return 0;
+}
+
+int yyerror(char *s)
+{
+    printf("Error: %s\n", s);
+    return 0;
+}
+
+
+UBUNTU INSTALLATION
+===================
+
+sudo apt update
+sudo apt install flex bison gcc
+
+
+EXECUTION STEPS
+===============
+
+1. Create the Lex file:
+
+nano calc.l
+
+Paste the complete calc.l code above.
+
+Save:
+Ctrl + O
+Enter
+
+Exit:
+Ctrl + X
+
+
+2. Create the Yacc file:
+
+nano calc.y
+
+Paste the complete calc.y code above.
+
+Save:
+Ctrl + O
+Enter
+
+Exit:
+Ctrl + X
+
+
+3. Generate the Yacc parser files:
+
+bison -d calc.y
+
+This creates:
+
+calc.tab.c
+calc.tab.h
+
+
+4. Generate the Lex scanner:
+
+flex calc.l
+
+This creates:
+
+lex.yy.c
+
+
+5. Compile both generated C files:
+
+gcc calc.tab.c lex.yy.c -o calc -lfl
+
+
+6. Run the calculator:
+
+./calc
+
+
+SAMPLE EXECUTION
+================
+
+Enter:
+
+3+4
+
+Output:
+
+Result = 7
+
+
+Enter:
+
+10-3
+
+Output:
+
+Result = 7
+
+
+Enter:
+
+5*6
+
+Output:
+
+Result = 30
+
+
+Enter:
+
+20/4
+
+Output:
+
+Result = 5
+
+
+Enter:
+
+3+4*2
+
+Output:
+
+Result = 11
+
+
+Enter:
+
+(3+4)*2
+
+Output:
+
+Result = 14
+
+
+Enter:
+
+-5+8
+
+Output:
+
+Result = 3
+
+
+To stop the program:
+
+Ctrl + D
+

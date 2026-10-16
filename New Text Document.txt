@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+// Function to generate assembly code from TAC
+void generateAssembly(char op, char arg1[], char arg2[], char result[]) {
+    if (op == '+') {
+        printf("MOV R0, %s\n", arg1);
+        printf("ADD R0, %s\n", arg2);
+        printf("MOV %s, R0\n", result);
+    }
+    else if (op == '-') {
+        printf("MOV R0, %s\n", arg1);
+        printf("SUB R0, %s\n", arg2);
+        printf("MOV %s, R0\n", result);
+    }
+    else if (op == '*') {
+        printf("MOV R0, %s\n", arg1);
+        printf("MUL R0, %s\n", arg2);
+        printf("MOV %s, R0\n", result);
+    }
+    else if (op == '/') {
+        printf("MOV R0, %s\n", arg1);
+        printf("DIV R0, %s\n", arg2);
+        printf("MOV %s, R0\n", result);
+    }
+    else {
+        printf("Unsupported operator: %c\n", op);
+    }
+}
+
+int main() {
+    char line[100];
+    char result[10], arg1[10], arg2[10], op;
+
+    printf("Enter Three Address Code (end with 'exit'):\n");
+
+    while (1) {
+        fgets(line, sizeof(line), stdin);
+
+        if (strncmp(line, "exit", 4) == 0)
+            break;
+
+        // Parse format: result = arg1 op arg2
+        if (sscanf(line, "%s = %s %c %s", result, arg1, &op, arg2) == 4) {
+            generateAssembly(op, arg1, arg2, result);
+        }
+        else {
+            printf("Invalid TAC format. Use: result = arg1 op arg2\n");
+        }
+    }
+
+    return 0;
+}
